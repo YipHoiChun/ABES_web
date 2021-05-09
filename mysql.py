@@ -130,11 +130,11 @@ def addEquipment(type, name, amount):
         cursor.close()
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def home():
-    # borrows = getBorrows()
-    # books = getBook()
-    return render_template("home.html")
+    borrows = getBorrows()
+    books = getBook()
+    return render_template("home.html", borrows=borrows, book=books)
 
 
 @app.route('/login', methods=["GET", "POST"])
