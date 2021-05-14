@@ -13,14 +13,6 @@ db_settings = {
 app = Flask(__name__, static_url_path='/static')
 
 
-# @app.route('/', methods=['POST', 'GET'])
-# def mysql():
-#     equipments = getEquipments()
-#     borrows = getBorrows()
-#     books = getBook()
-#     return render_template('home.html', equipment=equipments, borrow=borrows, book=books)
-
-
 @app.route('/searchequipments', methods=['POST'])
 def searchEquipment():
     name = request.form.get("name")
