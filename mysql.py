@@ -45,14 +45,14 @@ def getEquipments():
     return rows
 
 
-def getBorrows():
-    conn = pymysql.connect(**db_settings)
-    with conn.cursor() as cursor:
-        sql = "select * from borrow"
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-        cursor.close()
-    return rows
+# def getBorrows():
+#     conn = pymysql.connect(**db_settings)
+#     with conn.cursor() as cursor:
+#         sql = "select * from borrow"
+#         cursor.execute(sql)
+#         rows = cursor.fetchall()
+#         cursor.close()
+#     return rows
 
 
 def getBook():
@@ -79,13 +79,29 @@ def searchEquipments(name):
 
 def searchBorrows(name):
     conn = pymysql.connect(**db_settings)
+    userid = session['id']
     with conn.cursor() as cursor:
-        cursor.execute("select * from borrow where userid like '%" + name + "%'")
+        # cursor.execute("select * from borrow where userid = '%" + userid + "%' AND name like '%" + name + "%'")
+        # sql = "select * from borrow where name like '%" + name + "%'"
+        sql = "SELECT * FROM borrow WHERE userid='%s' AND name='%s'" % (userid, name)
+        cursor.execute(sql)
         rows = cursor.fetchall()
         for row in rows:
             print(row[1])
         cursor.close()
         return rows
+
+def getBorrows():
+    conn = pymysql.connect(**db_settings)
+    with conn.cursor() as cursor:
+        id = session['id']
+        sql = "select * from borrow where userid=%s"
+        cursor.execute(sql, id)
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row[1])
+        cursor.close()
+    return rows
 
 
 @app.route('/addbook', methods=['POST'])
@@ -99,13 +115,13 @@ def addbook():
 def addBook(name):
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        date = dt.datetime.now().strftime('%F')
+        date = dt.datetime.now().strftime('%F.%H:%M:%S')
         userid = session['id']
         sql = "INSERT INTO book VALUES('%s','%s','%s')" % (userid, name, date)
         sql1 = "UPDATE equipment SET amount=amount-1 WHERE name='%s'" % name
         cursor.execute(sql)
         cursor.execute(sql1)
-        conn.commit()  # 提交数据库
+        conn.commit()
         cursor.close()
     books = getBook()
     return render_template('login.html', book=books)
@@ -134,7 +150,8 @@ def addEquipment(type, name, amount):
 def home():
     borrows = getBorrows()
     books = getBook()
-    return render_template("home.html", borrows=borrows, book=books)
+    equipments = getEquipments()
+    return render_template("home.html", borrow=borrows, book=books, equipment=equipments)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -154,8 +171,10 @@ def login():
         if len(user) > 0:
             session['id'] = id
             print("login")
+            borrows = getBorrows()
             books = getBook()
-            return render_template("home.html", book=books)
+            equipments = getEquipments()
+            return render_template("home.html", borrow=borrows, book=books, equipment=equipments)
         else:
             return "Error user not found"
     else:
