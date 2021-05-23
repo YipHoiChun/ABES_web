@@ -7,6 +7,7 @@
             {% if session['id'] %}
                 Welcome {{ session['id'] }}</h4>
             <h2>Book</h2>
+            <h3>Enter Equipment Name</h3>
              <div class="input-group">
                  <form class="form" action="/addbook" method="post">
 <!--                     <input name="userid" value="{{userid}}" >-->
@@ -31,6 +32,7 @@
                 </tbody>
             </table>
             <h2>Your Borrow</h2>
+            <h3>Enter Equipment Name</h3>
             <div class="input-group">
                 <form class="form" action="/searchborrows" method="post">
                     <input name="name" class="rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon"/>
@@ -67,6 +69,7 @@
     </div>
 </div>
 <h2>Search Equipment</h2>
+<h3>Enter Equipment Name</h3>
 <div class="input-group">
     <form class="form" action="/searchequipments" method="post">
         <input name="name" class="rounded" placeholder="Search" aria-label="Search"
